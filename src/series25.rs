@@ -218,11 +218,11 @@ impl<SPI: SpiBus, CS: OutputPin> Read<u32, SPI, CS> for Flash<SPI, CS> {
 }
 
 impl<SPI: SpiBus, CS: OutputPin> BlockDevice<u32, SPI, CS> for Flash<SPI, CS> {
-    fn erase_sectors(&mut self, addr: u32, amount: usize) -> Result<(), Error<SPI, CS>> {
-        for c in 0..amount {
+    fn erase_sectors(&mut self, addr: u32, num_sectors: usize) -> Result<(), Error<SPI, CS>> {
+        for c in 0..num_sectors {
             self.write_enable()?;
 
-            let current_addr: u32 = (addr as usize + c * 256).try_into().unwrap();
+            let current_addr: u32 = (addr as usize + c * 4096).try_into().unwrap();
             let mut cmd_buf = [
                 Opcode::SectorErase as u8,
                 (current_addr >> 16) as u8,
